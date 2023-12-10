@@ -6,6 +6,8 @@ using System.IO;
 
 public class MapDataLoader : MonoBehaviour
 {
+    public MapData Load(string fileName)
+    {
     // fileName 에 ".json" 문장이 없으면 입력해준다.
     // ex ) "Stage01" => "Stage01.json"
     if ( fileName.Contains(".json") == false)
@@ -25,4 +27,5 @@ public class MapDataLoader : MonoBehaviour
     mapData = JsonConvert.DeserializeObject<MapData>(dataAsJson);
 
     return mapData;
+    }
 }
