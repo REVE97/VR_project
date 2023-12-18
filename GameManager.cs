@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using TMPro;
+using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public int totalPoint;
@@ -13,8 +14,14 @@ public class GameManager : MonoBehaviour
     public GameObject[] Stages;
 
     public Image[] UIhealth;
-    public Text UIPoint;
-    public Text UIStage;
+    public TextMeshProUGUI UIPoint;
+    public TextMeshProUGUI UIStage;
+    public GameObject UIRestartBtn;
+
+    void Update()
+    {
+        UIPoint.text = (totalPoint + stagePoint).ToString();
+    }
 
 
     public void NextStage()
@@ -26,6 +33,8 @@ public class GameManager : MonoBehaviour
         stageIndex++;
         Stages[stageIndex].SetActive(true);
         PlayerReposition();
+
+        UIStage.text = "STAGE " + ( stageIndex + 1 );
         }
         else {
             // Game Clear
@@ -35,6 +44,10 @@ public class GameManager : MonoBehaviour
             // Result UI
             Debug.Log("게임 클리어!");
             // Restart Button UI
+            UIRestartBtn.SetActive(true);
+            Text btnText = UIRestartBtn.GetComponentInChildren<Text>();
+            btnText.text="Game Clear!";
+            ViewBtn();
         }
         
         // Calculate Point
@@ -44,9 +57,14 @@ public class GameManager : MonoBehaviour
 
     public void HealthDown()
     {
-        if(health > 1)
+        if(health > 1){
             health--;
+            UIhealth[health].color = new Color(1,0,0,0.4f);
+        }   
         else {
+            // All Health UI Off
+            UIhealth[0].color = new Color(1,0,0,0.4f);
+            
             // Player Die Effect
             player.OnDie();
             
@@ -54,6 +72,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("죽었습니다!");
             
             // Retry Button UI
+            UIRestartBtn.SetActive(true);
         }
     }
     
@@ -79,6 +98,16 @@ public class GameManager : MonoBehaviour
         player.transform.position = new Vector3(0,0,-1);
         player.VelocityZero();
     }
+
+    void ViewBtn()
+    {
+        UIRestartBtn.SetActive(true);
+    }
     
+    public void Restart()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene(0);
+    }
     
 }

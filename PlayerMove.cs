@@ -5,19 +5,59 @@ using UnityEngine;
 public class PlayerMove : MonoBehaviour
 {
     public GameManager gameManager;
+    public AudioClip audioJump;
+    public AudioClip audioAttack;
+    public AudioClip audioDamaged;
+    public AudioClip audioItem;
+    public AudioClip audioDie;
+    public AudioClip audioFinish;
     public float maxSpeed;
     public float jumpPower;
     Rigidbody2D rigid;
     SpriteRenderer spriteRenderer;
     Animator anim;
     CapsuleCollider2D capsuleCollider;
+    AudioSource audioSource;
 
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
 
+    }
+
+
+    void PlaySound(string action)
+    {
+        switch (action)
+        {
+            case "JUMP":
+                audioSource.clip = audioJump;
+                audioSource.Play();
+                break;
+            case "ATTACK":
+                audioSource.clip = audioAttack;
+                audioSource.Play();
+                break;
+            case "DAMAGED":
+                audioSource.clip = audioDamaged;
+                audioSource.Play();
+                break;
+            case "ITEM":
+                audioSource.clip = audioItem;
+                audioSource.Play();
+                break;
+            case "DIE":
+                audioSource.clip = audioDie;
+                audioSource.Play();
+                break;
+            case "FINISH":
+                audioSource.clip = audioFinish;
+                audioSource.Play();
+                break;
+        }
     }
 
     void Update()
@@ -27,6 +67,7 @@ public class PlayerMove : MonoBehaviour
         {
            rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
            anim.SetBool("is Jumping", true);
+           PlaySound("JUMP");
         }
 
         
@@ -111,11 +152,17 @@ public class PlayerMove : MonoBehaviour
                 gameManager.stagePoint += 300;
             // Deactive Item
             collision.gameObject.SetActive(false);
+
+            // Sound
+            PlaySound("ITEM");
         }
         else if (collision.gameObject.tag == "Finish")
         {
             // Next Stage
            gameManager.NextStage();
+
+           // Sound
+           PlaySound("FINISH");
         }
     }
 
@@ -128,6 +175,9 @@ public class PlayerMove : MonoBehaviour
         // Enemy Die
         EnemyMove enemyMove = enemy.GetComponent<EnemyMove>();
         enemyMove.OnDamaged();
+
+        // Sound
+        PlaySound("ATTACK");
     }
     
     
@@ -149,6 +199,9 @@ public class PlayerMove : MonoBehaviour
 
         // Animation
         anim.SetTrigger("doDamaged");
+
+        // Sound
+        PlaySound("DAMAGED");
         
         
         
@@ -172,6 +225,9 @@ public class PlayerMove : MonoBehaviour
         capsuleCollider.enabled = false;
         // Die Effect Jump
         rigid.AddForce(Vector2.up * 5,ForceMode2D.Impulse);
+
+        //Sound
+        PlaySound("DIE");
     }
 
     public void VelocityZero()
